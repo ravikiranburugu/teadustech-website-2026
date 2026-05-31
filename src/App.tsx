@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import ChatAssistant from './components/ChatAssistant';
+import InternshipProgramView from './components/InternshipProgramView';
 import { 
   Menu, 
   X, 
@@ -625,6 +626,8 @@ function SolutionsView({ navigate }: { navigate: (p: Page) => void }) {
 }
 
 function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
+  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'internship'>('overview');
+
   const programs = [
     { 
       icon: <School size={32} />, 
@@ -640,9 +643,10 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
       title: "Student Skill Development Program", 
       acronym: "SSDP",
       target: "Graduates & Postgraduates",
-      text: "Rigorous preparation for graduates to bridge the gap between academic theory and industry reality.",
+      text: "Rigorous preparation for graduates to bridge the gap between academic theory and industry reality. This is our core Software Development Internship Readiness Program.",
       support: "Support via Slack, Email, and WhatsApp groups",
-      skills: ["Computational Thinking", "DS & Algorithms", "System Design", "JS / Python / Java", "React / Node / Spring Boot", "MySQL & MongoDB", "Cloud: AWS/GCP"]
+      skills: ["Computational Thinking", "DS & Algorithms", "System Design", "JS / Python / Java", "React / Node / Spring Boot", "MySQL & MongoDB", "Cloud: AWS/GCP"],
+      actionLabel: "Explore Syllabus & Practice SOP"
     },
     { 
       icon: <Cpu size={32} />, 
@@ -660,6 +664,14 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
     }
   ];
 
+  if (activeSubTab === 'internship') {
+    return (
+      <div className="max-w-[1280px] mx-auto px-margin py-6">
+        <InternshipProgramView onBackToOverview={() => setActiveSubTab('overview')} />
+      </div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -667,6 +679,27 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
       exit={{ opacity: 0 }}
       className="max-w-[1280px] mx-auto px-margin py-xl"
     >
+      {/* Dynamic Recruitment Banner */}
+      <div className="mb-8 p-6 bg-gradient-to-r from-primary/5 to-brand-light/10 border border-[#14b8a5]/30 rounded-2xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 shadow-sm">
+        <div>
+          <span className="bg-[#14b8a5] text-white text-[10px] uppercase font-bold tracking-wider px-2.5 py-1 rounded-sm">
+            Admissions Active
+          </span>
+          <h4 className="font-headline-sm text-base mt-2.5 font-bold text-on-surface">
+            16-Week Mentored Software Development Internship Readiness Program
+          </h4>
+          <p className="text-xs text-secondary font-body-sm mt-1">
+            Unpaid learning sandbox program designed for final-year students and graduates with 1-on-1 expert checkpoints review.
+          </p>
+        </div>
+        <button 
+          onClick={() => setActiveSubTab('internship')}
+          className="bg-brand-light text-on-brand-light font-label-md hover:bg-primary hover:text-on-primary px-5 py-2.5 rounded-lg flex items-center gap-1.5 shrink-0 transition-colors shadow-sm font-bold scale-100 active:scale-95 duration-150"
+        >
+          Review SOP & Register <ArrowRight size={16} />
+        </button>
+      </div>
+
       <section className="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-center mb-xl">
         <div className="lg:col-span-6 space-y-md">
           <div className="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container px-3 py-1.5 rounded-full font-label-sm uppercase tracking-wider">
@@ -677,11 +710,20 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
             From foundational school-age learning to advanced professional mastery, TEADUSTECH Skill Hub provides the architectural framework for your career growth.
           </p>
           <div className="flex gap-4 flex-wrap">
-            <button className="bg-brand-light text-on-brand-light px-6 py-3 rounded-lg font-label-md flex items-center gap-2 hover:bg-primary hover:text-on-primary transition-all shadow-sm">
+            <button 
+              onClick={() => setActiveSubTab('internship')}
+              className="bg-brand-light text-on-brand-light px-6 py-3 rounded-lg font-label-md flex items-center gap-2 hover:bg-primary hover:text-on-primary transition-all shadow-sm font-bold"
+            >
               View Detailed Curriculum <ArrowRight size={18} />
             </button>
-            <button className="bg-white border border-outline px-6 py-3 rounded-lg font-label-md hover:bg-brand-light transition-colors">
-              Request Info Pack
+            <button 
+              onClick={() => {
+                const element = document.getElementById('programs-list');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="bg-white border border-outline px-6 py-3 rounded-lg font-label-md hover:bg-brand-light transition-colors"
+            >
+              Explore Tracks
             </button>
           </div>
         </div>
@@ -711,7 +753,13 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
               ))}
             </ul>
             <div className="pt-8">
-              <button className="bg-brand-light text-on-brand-light px-10 py-4 rounded-lg font-label-md hover:bg-primary hover:text-on-primary transition-all shadow-md">
+              <button 
+                onClick={() => {
+                  const element = document.getElementById('programs-list');
+                  element?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="bg-brand-light text-on-brand-light px-10 py-4 rounded-lg font-label-md hover:bg-primary hover:text-on-primary transition-all shadow-md"
+              >
                 Start Global Diagnostic
               </button>
             </div>
@@ -749,13 +797,16 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
       </section>
 
       {/* Learning Paths */}
-      <section className="mb-xl">
+      <section id="programs-list" className="mb-xl">
         <div className="flex justify-between items-end mb-10">
            <div>
              <h2 className="font-headline-md">Skill Hub Programs</h2>
              <p className="font-body-md text-on-surface-variant mt-2">Specialized development tracks for every stage of your technical journey.</p>
            </div>
-           <button className="text-primary font-label-md hover:underline flex items-center gap-1 hidden md:flex font-bold">
+           <button 
+             onClick={() => setActiveSubTab('internship')}
+             className="text-primary font-label-md hover:underline flex items-center gap-1 hidden md:flex font-bold"
+           >
              Full Track Details <ChevronRight size={16} />
            </button>
         </div>
@@ -777,7 +828,14 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
                variants={{ hidden: { opacity: 0, y: 30 }, show: { opacity: 1, y: 0 } }}
                whileHover={{ y: -10 }}
                key={idx} 
-               className="bg-white border border-outline-variant/30 p-lg rounded-2xl shadow-sm hover:border-primary/50 transition-all cursor-pointer group flex flex-col items-center text-center hover:shadow-2xl"
+               onClick={() => {
+                 if (p.acronym === 'SSDP') {
+                   setActiveSubTab('internship');
+                 }
+               }}
+               className={`bg-white border p-lg rounded-2xl shadow-sm hover:border-primary/50 transition-all cursor-pointer group flex flex-col items-center text-center hover:shadow-2xl ${
+                 p.acronym === 'SSDP' ? 'border-[#14b8a5] ring-2 ring-[#14b8a5]/10' : 'border-outline-variant/30'
+               }`}
              >
                 <div className="flex flex-col items-center mb-6 w-full">
                   <motion.div 
@@ -799,6 +857,12 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
                   <div className="flex items-center justify-center gap-2 mb-6 p-3 bg-surface-container-lowest rounded-lg border border-primary/5 w-full">
                     <Users size={16} className="text-primary" />
                     <span className="text-xs font-bold text-primary/80 uppercase tracking-widest">{p.support}</span>
+                  </div>
+                )}
+
+                {p.actionLabel && (
+                  <div className="w-full mb-6 py-2 px-4 bg-[#eaf8f7] text-primary border border-[#14b8a5]/30 rounded-lg text-xs font-bold uppercase tracking-wider group-hover:bg-[#14b8a5] group-hover:text-white transition-all">
+                    {p.actionLabel} &rarr;
                   </div>
                 )}
 
