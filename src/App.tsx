@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import ChatAssistant from './components/ChatAssistant';
 import InternshipProgramView from './components/InternshipProgramView';
+import ChildrenProgramView from './components/ChildrenProgramView';
 import { 
   Menu, 
   X, 
@@ -626,7 +627,7 @@ function SolutionsView({ navigate }: { navigate: (p: Page) => void }) {
 }
 
 function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
-  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'internship'>('overview');
+  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'internship' | 'children'>('overview');
 
   const programs = [
     { 
@@ -636,7 +637,8 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
       target: "High School Students",
       text: "Empowering high school students with essential IT skills to secure a leading position in the competitive digital world.",
       support: "Support via Slack, Email, and WhatsApp groups",
-      skills: ["Scratch", "Computer Operations", "Basic Programming", "Problem Solving Skills"]
+      skills: ["Scratch", "Computer Operations", "Basic Programming", "Problem Solving Skills"],
+      actionLabel: "Explore Syllabus & Eligibility"
     },
     { 
       icon: <GraduationCap size={32} />, 
@@ -668,6 +670,14 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
     return (
       <div className="max-w-[1280px] mx-auto px-margin py-6">
         <InternshipProgramView onBackToOverview={() => setActiveSubTab('overview')} />
+      </div>
+    );
+  }
+
+  if (activeSubTab === 'children') {
+    return (
+      <div className="max-w-[1280px] mx-auto px-margin py-6">
+        <ChildrenProgramView onBackToOverview={() => setActiveSubTab('overview')} />
       </div>
     );
   }
@@ -831,10 +841,12 @@ function SkillHubView({ navigate }: { navigate: (p: Page) => void }) {
                onClick={() => {
                  if (p.acronym === 'SSDP') {
                    setActiveSubTab('internship');
+                 } else if (p.acronym === 'CSDP') {
+                   setActiveSubTab('children');
                  }
                }}
                className={`bg-white border p-lg rounded-2xl shadow-sm hover:border-primary/50 transition-all cursor-pointer group flex flex-col items-center text-center hover:shadow-2xl ${
-                 p.acronym === 'SSDP' ? 'border-[#14b8a5] ring-2 ring-[#14b8a5]/10' : 'border-outline-variant/30'
+                 p.acronym === 'SSDP' || p.acronym === 'CSDP' ? 'border-[#14b8a5] ring-2 ring-[#14b8a5]/10' : 'border-outline-variant/30'
                }`}
              >
                 <div className="flex flex-col items-center mb-6 w-full">

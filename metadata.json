@@ -2,5 +2,5 @@
   "name": "TEADUSTECH",
   "description": "Professional technology consulting and educational platform providing enterprise solutions and technical resource hubs.",
   "requestFramePermissions": [],
-  "majorCapabilities": []
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>TEADUSTECH - We Provide Solutions</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <script>
+      // Global fallback to prevent 'process is not defined' crashes in browser environments
+      if (typeof globalThis.process === 'undefined') {
+        globalThis.process = { env: {} };
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

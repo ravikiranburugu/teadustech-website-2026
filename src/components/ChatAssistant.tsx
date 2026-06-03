@@ -5,7 +5,22 @@ import { Send, X, MessageSquare, Loader2, User, Bot, HelpCircle, Sparkles } from
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+// Safe lazy-initialization helper to prevent crashes on startup if the API key is missing
+let aiInstance: GoogleGenAI | null = null;
+function getGenAI() {
+  if (aiInstance) return aiInstance;
+  
+  const metaEnv = (import.meta as any).env;
+  const key = (typeof process !== "undefined" && process.env && process.env.GEMINI_API_KEY) || 
+              (metaEnv && metaEnv.VITE_GEMINI_API_KEY);
+
+  if (!key || key.trim() === "") {
+    throw new Error("The Gemini API key is missing or empty.");
+  }
+  
+  aiInstance = new GoogleGenAI({ apiKey: key });
+  return aiInstance;
+}
 
 const SUGGESTIONS = [
   "What business solutions do you offer?",
@@ -42,6 +57,7 @@ export default function ChatAssistant() {
     setIsLoading(true);
 
     try {
+      const ai = getGenAI();
       const response = await ai.models.generateContentStream({
         model: "gemini-3-flash-preview",
         contents: [...messages, userMessage].map(m => ({
@@ -80,11 +96,29 @@ export default function ChatAssistant() {
           });
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Chat Error:", error);
+      
+      const isConfigError = error.message && (error.message.includes("API key") || error.message.includes("missing or empty"));
+      const errorMessage = isConfigError 
+        ? `### ⚠️ AI Assistant Offline
+
+This chat feature is powered by the **Gemini 1.5 API**, which requires an API key to function.
+
+To resolve this and make the AI fully operational:
+1. Go to your **Vercel Dashboard**.
+2. Open this project, navigate to **Settings > Environment Variables**.
+3. Create a new environment variable:
+   - **Name:** \`GEMINI_API_KEY\`
+   - **Value:** *[Your Google AI Studio API Key]*
+4. Save and trigger a new deployment of your Vercel project.
+
+All other parts of the website remain fully functional! Let us know if you need any other assistance or email team at **support@teadustech.com**.`
+        : "Sorry, I encountered an error. Please try again later or contact support@teadustech.com.";
+
       setMessages((prev) => [
         ...prev,
-        { role: "model", content: "Sorry, I encountered an error. Please try again later or contact support@teadustech.com." },
+        { role: "model", content: errorMessage },
       ]);
     } finally {
       setIsLoading(false);
